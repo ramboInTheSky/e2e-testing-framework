@@ -1,0 +1,2732 @@
+[
+  {
+    "__docId__": 0,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/api.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/api.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst async = require('async');\n\nconst configHelper = require('./lib/config');\nconst configStore = require('./lib/stores/config');\nconst runner = require('./lib/runner');\nconst logger = require('./lib/logger');\n\nconst infoLog = (config, multiple) => {\n  logger.title(`Amido E2E Test Framework - ${config.name}`);\n  logger.lineBreak();\n  logger.info(multiple ? 'Running multiple instances in serial' : 'Running single instance');\n  logger.lineBreak();\n  logger.info(`Feature files directory: ${config.featuresDir}`);\n  logger.info(`Environment: ${config.environment}`);\n  logger.lineBreak();\n};\n\n/**\n  * Public framework API methods\n  * @example const framework = require('amido-frontend-e2e-framework');\n  * @example framework.api.run({\n      name: 'Amido frontend E2E example',\n      featuresDir: `${__dirname}/features`,\n\n      defaultTimeout: 60000,\n\n      createReport: true,\n      reportsDir: `${__dirname}/reports`,\n\n      takeScreenshotOnFailure: true,\n      screenshotsDir: `${__dirname}/reports/screenshots`,\n\n      localDriver: 'chrome',\n      browserstack: {\n        server: 'hub-cloud.browserstack.com',\n        username: 'edkelly3',\n        accessKey: 'G2FpCqykFqGvBrDwj3Cr',\n\n        capabilities: {\n          browserName: 'Chrome',\n          resolution: '1024x768',\n        },\n      },\n\n      debug: true,\n    });\n  * @example framework.api.runMultiple({\n      name: 'Amido frontend E2E example',\n      featuresDir: `${__dirname}/features`,\n\n      defaultTimeout: 60000,\n\n      createReport: true,\n      reportsDir: `${__dirname}/reports`,\n\n      takeScreenshotOnFailure: true,\n      screenshotsDir: `${__dirname}/reports/screenshots`,\n\n      localDriver: 'chrome',\n      browserstack: {\n        server: 'hub-cloud.browserstack.com',\n        username: 'edkelly3',\n        accessKey: 'G2FpCqykFqGvBrDwj3Cr',\n      },\n\n      debug: true,\n    }, [\n      {\n        browserName: 'Chrome',\n        resolution: '1024x768',\n      },\n      {\n        browserName: 'Firefox',\n        resolution: '1024x768',\n      },\n    ]);\n  * @access public\n  */\nconst api = {\n  run: (_config) => {\n    // get config\n\n    const config = configHelper.extendFromDefaultObject(_config);\n    config.frameworkBaseDir = __dirname;\n\n    infoLog(config, false);\n\n    // assign to store\n\n    configStore.set(config);\n\n    // let's go!\n\n    runner(configHelper.getCliArgumentsFromObject(config));\n  },\n\n  runMultiple: (_config, capabilities) => {\n    // get config\n\n    let config = configHelper.extendFromDefaultObject(_config);\n    config.frameworkBaseDir = __dirname;\n\n    infoLog(config, true);\n\n    // this method shouldn't be used with local run\n\n    if (config.environment !== 'remote') {\n      throw new Error('runMultiple() is only designed to work remotely');\n    }\n\n    const waterfallFuncs = [];\n\n    // for all the passed cabailities\n\n    capabilities.forEach((capability) => {\n      waterfallFuncs.push((callback) => {\n        // reload config (especially the fileSuffix param for reporting/screenshotting)\n\n        config = configHelper.extendFromDefaultObject(_config);\n\n        config.frameworkBaseDir = __dirname;\n        config.browserstack.capabilities = capability;\n\n        // save in store\n\n        configStore.set(config);\n\n        // let's go!\n\n        runner(configHelper.getCliArgumentsFromObject(config))\n          .then(callback);\n      });\n    });\n\n    // run all in sequence\n\n    async.waterfall(waterfallFuncs);\n  },\n};\n\nmodule.exports = api;\n"
+  },
+  {
+    "__docId__": 1,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "async",
+    "memberof": "amido-frontend-e2e-framework/api.js",
+    "longname": "amido-frontend-e2e-framework/api.js~async",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/api.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 2,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "configHelper",
+    "memberof": "amido-frontend-e2e-framework/api.js",
+    "longname": "amido-frontend-e2e-framework/api.js~configHelper",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/api.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 3,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "configStore",
+    "memberof": "amido-frontend-e2e-framework/api.js",
+    "longname": "amido-frontend-e2e-framework/api.js~configStore",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/api.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 4,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "runner",
+    "memberof": "amido-frontend-e2e-framework/api.js",
+    "longname": "amido-frontend-e2e-framework/api.js~runner",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/api.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 5,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "logger",
+    "memberof": "amido-frontend-e2e-framework/api.js",
+    "longname": "amido-frontend-e2e-framework/api.js~logger",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/api.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 8,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 6,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "infoLog",
+    "memberof": "amido-frontend-e2e-framework/api.js",
+    "longname": "amido-frontend-e2e-framework/api.js~infoLog",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/api.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 10,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 7,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "api",
+    "memberof": "amido-frontend-e2e-framework/api.js",
+    "longname": "amido-frontend-e2e-framework/api.js~api",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/api.js",
+    "importStyle": "api",
+    "description": "Public framework API methods",
+    "examples": [
+      "const framework = require('amido-frontend-e2e-framework');",
+      "framework.api.run({\nname: 'Amido frontend E2E example',\nfeaturesDir: `${__dirname}/features`,\n\ndefaultTimeout: 60000,\n\ncreateReport: true,\nreportsDir: `${__dirname}/reports`,\n\ntakeScreenshotOnFailure: true,\nscreenshotsDir: `${__dirname}/reports/screenshots`,\n\nlocalDriver: 'chrome',\nbrowserstack: {\nserver: 'hub-cloud.browserstack.com',\nusername: 'edkelly3',\naccessKey: 'G2FpCqykFqGvBrDwj3Cr',\n\ncapabilities: {\nbrowserName: 'Chrome',\nresolution: '1024x768',\n},\n},\n\ndebug: true,\n});",
+      "framework.api.runMultiple({\nname: 'Amido frontend E2E example',\nfeaturesDir: `${__dirname}/features`,\n\ndefaultTimeout: 60000,\n\ncreateReport: true,\nreportsDir: `${__dirname}/reports`,\n\ntakeScreenshotOnFailure: true,\nscreenshotsDir: `${__dirname}/reports/screenshots`,\n\nlocalDriver: 'chrome',\nbrowserstack: {\nserver: 'hub-cloud.browserstack.com',\nusername: 'edkelly3',\naccessKey: 'G2FpCqykFqGvBrDwj3Cr',\n},\n\ndebug: true,\n}, [\n{\nbrowserName: 'Chrome',\nresolution: '1024x768',\n},\n{\nbrowserName: 'Firefox',\nresolution: '1024x768',\n},\n]);"
+    ],
+    "lineNumber": 81,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 8,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/config/default.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/config/default.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "const moment = require('moment');\n\n/**\n  * Default config\n  * @access private\n  * @desc Default config which is overridden by implementing party's config.\n*/\nconst defaultConfig = {\n  name: 'Amido E2E Framework',\n  featuresDir: '../../features',\n\n  environment: 'local',\n  defaultTimeout: 10000,\n\n  createReport: true,\n  reportsDir: '../../reports',\n\n  takeScreenshotOnFailure: true,\n  screenshotsDir: '../../reports/screenshots',\n\n  fileSuffix: moment().format('DDMMYY-HHmmss'),\n\n  localDriver: 'chrome',\n  browserstack: {\n    server: 'hub-cloud.browserstack.com',\n    username: null,\n    accessKey: null,\n\n    capabilities: {\n      browserName: 'Chrome',\n      resolution: '1024x768',\n    },\n  },\n\n  debug: false,\n};\n\nmodule.exports = defaultConfig;\n"
+  },
+  {
+    "__docId__": 9,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "moment",
+    "memberof": "amido-frontend-e2e-framework/config/default.js",
+    "longname": "amido-frontend-e2e-framework/config/default.js~moment",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/config/default.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 10,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "defaultConfig",
+    "memberof": "amido-frontend-e2e-framework/config/default.js",
+    "longname": "amido-frontend-e2e-framework/config/default.js~defaultConfig",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/config/default.js",
+    "importStyle": "defaultConfig",
+    "description": "Default config which is overridden by implementing party's config.",
+    "lineNumber": 8,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 11,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/step_definitions/browser.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/browser.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst browser = require('../support/browser');\n\n/**\n  * Browser step definitions for use in feature files\n  * @access public\n  * @example Given I navigate to \"http://www.google.com\"\n  * @example When I navigate to \"http://www.google.com\"\n  * @example When I get the browser title\n  * @example When I switch to the window named \"window1\"\n  * @example When I switch to the frame named \"frame1\"\n  * @example When I go back in the browser\n  * @example When I go forward in the browser\n  */\nconst browserStepDefs = function () {\n  this.Given(/^I navigate to \"([^\"]*)\"$/, function (url) {\n    return browser.getUrl.call(this, url);\n  });\n\n  this.When(/^I navigate to \"([^\"]*)\"$/, function (url) {\n    return browser.getUrl.call(this, url);\n  });\n\n  this.When(/^I get the browser title\"$/, function () {\n    return browser.getTitle.call(this);\n  });\n\n  this.When(/^I switch to the window named \"([^\"]*)\"$/, function (windowName) {\n    return browser.switchToWindow.call(this, windowName);\n  });\n\n  this.When(/^I switch to the frame named \"([^\"]*)\"$/, function (frameName) {\n    return browser.switchToFrame.call(this, frameName);\n  });\n\n  this.When(/^I go back in the browser$/, function () {\n    return browser.goBack.call(this);\n  });\n\n  this.When(/^I go forward in the browser$/, function () {\n    return browser.goForward.call(this);\n  });\n};\n\nmodule.exports = browserStepDefs;\n"
+  },
+  {
+    "__docId__": 12,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "browser",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/browser.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/browser.js~browser",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/browser.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 13,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "browserStepDefs",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/browser.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/browser.js~browserStepDefs",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/browser.js",
+    "importStyle": "browserStepDefs",
+    "description": "Browser step definitions for use in feature files",
+    "examples": [
+      "Given I navigate to \"http://www.google.com\"",
+      "When I navigate to \"http://www.google.com\"",
+      "When I get the browser title",
+      "When I switch to the window named \"window1\"",
+      "When I switch to the frame named \"frame1\"",
+      "When I go back in the browser",
+      "When I go forward in the browser"
+    ],
+    "lineNumber": 16,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 14,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/step_definitions/element.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/element.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "const element = require('../support/element');\n\n/**\n  * Element step definitions for use in feature files\n  * @access public\n  * @example When I click the element with ID \"my-id\"\n  * @example When I click the element with class \"my-class\"\n  * @example When I click the element with tag \"a\"\n  * @example When I click the element with name \"my-name\"\n  * @example When I click the element with link text \"My link\"\n  * @example When I click the element with partial link text \"My li\"\n  * @example When I click the element with CSS selector \".my-class\"\n  * @example When I click the element with XPath \"/html/body/article/p\"\n  * @example Then the element with ID \"my-id\" should exist\n  * @example Then the element with class \"my-class\" should exist\n  * @example Then the element with tag \"a\" should exist\n  * @example Then the element with name \"my-name\" should exist\n  * @example Then the element with link text \"My link\" should exist\n  * @example Then the element with partial link text \"My li\" should exist\n  * @example Then the element with CSS selector \".my-class\" should exist\n  * @example Then the element with XPath \"/html/body/article/p\" should exist\n  */\nconst elementStepDefs = function () {\n  // clicks\n\n  this.When(/^I click the element with ID \"([^\"]*)\"$/, function (id) {\n    return element.findById.call(this, id).click();\n  });\n\n  this.When(/^I click the element with class \"([^\"]*)\"$/, function (className) {\n    return element.findByClassName.call(this, className).click();\n  });\n\n  this.When(/^I click the element with tag \"([^\"]*)\"$/, function (tagName) {\n    return element.findByTagName.call(this, tagName).click();\n  });\n\n  this.When(/^I click the element with name \"([^\"]*)\"$/, function (name) {\n    return element.findByName.call(this, name).click();\n  });\n\n  this.When(/^I click the element with link text \"([^\"]*)\"$/, function (linkText) {\n    return element.findByLinkText.call(this, linkText).click();\n  });\n\n  this.When(/^I click the element with partial link text \"([^\"]*)\"$/, function (partialLinkText) {\n    return element.findByPartialLinkText.call(this, partialLinkText).click();\n  });\n\n  this.When(/^I click the element with CSS selector \"([^\"]*)\"$/, function (css) {\n    return element.findByCss.call(this, css).click();\n  });\n\n  this.When(/^I click the element with XPath \"([^\"]*)\"$/, function (xpath) {\n    return element.findByXPath.call(this, xpath).click();\n  });\n\n  // existence\n\n  this.Then(/^the element with ID \"([^\"]*)\" should exist$/, function (id) {\n    return element.findById.call(this, id);\n  });\n\n  this.Then(/^the element with class \"([^\"]*)\" should exist$/, function (className) {\n    return element.findByClassName.call(this, className);\n  });\n\n  this.Then(/^the element with tag \"([^\"]*)\" should exist$/, function (tagName) {\n    return element.findByTagName.call(this, tagName);\n  });\n\n  this.Then(/^the element with name \"([^\"]*)\" should exist$/, function (name) {\n    return element.findByName.call(this, name);\n  });\n\n  this.Then(/^the element with link text \"([^\"]*)\" should exist$/, function (linkText) {\n    return element.findByLinkText.call(this, linkText);\n  });\n\n  this.Then(/^the element with partial link text \"([^\"]*)\" should exist$/, function (partialLinkText) {\n    return element.findByPartialLinkText.call(this, partialLinkText);\n  });\n\n  this.Then(/^the element with CSS selector \"([^\"]*)\" should exist$/, function (css) {\n    return element.findByCss.call(this, css);\n  });\n\n  this.Then(/^the element with XPath \"([^\"]*)\" should exist$/, function (xpath) {\n    return element.findByXPath.call(this, xpath);\n  });\n};\n\nmodule.exports = elementStepDefs;\n"
+  },
+  {
+    "__docId__": 15,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "element",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/element.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/element.js~element",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/element.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 16,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "elementStepDefs",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/element.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/element.js~elementStepDefs",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/element.js",
+    "importStyle": "elementStepDefs",
+    "description": "Element step definitions for use in feature files",
+    "examples": [
+      "When I click the element with ID \"my-id\"",
+      "When I click the element with class \"my-class\"",
+      "When I click the element with tag \"a\"",
+      "When I click the element with name \"my-name\"",
+      "When I click the element with link text \"My link\"",
+      "When I click the element with partial link text \"My li\"",
+      "When I click the element with CSS selector \".my-class\"",
+      "When I click the element with XPath \"/html/body/article/p\"",
+      "Then the element with ID \"my-id\" should exist",
+      "Then the element with class \"my-class\" should exist",
+      "Then the element with tag \"a\" should exist",
+      "Then the element with name \"my-name\" should exist",
+      "Then the element with link text \"My link\" should exist",
+      "Then the element with partial link text \"My li\" should exist",
+      "Then the element with CSS selector \".my-class\" should exist",
+      "Then the element with XPath \"/html/body/article/p\" should exist"
+    ],
+    "lineNumber": 23,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 17,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "const element = require('../support/element');\nconst form = require('../support/form');\nconst expect = require('chai').expect;\n\n/**\n  * Form step definitions for use in feature files\n  * @access public\n  * @example When I input the text \"my text\" into the element with ID \"my-id\"\n  * @example When I input the text \"my text\" into the element with class \"my-class\"\n  * @example When I input the text \"my text\" into the element with tag \"input\"\n  * @example When I input the text \"my text\" into the element with name \"my-name\"\n  * @example When I input the text \"my text\" into the element with CSS selector \".my-form-field\"\n  * @example When I input the text \"my text\" into the element with XPath \"/html/body/article/input\"\n  * @example Then the element with ID \"my-id\" has the value \"my text\"\n  * @example Then the element with class \"my-class\" has the value \"my text\"\n  * @example Then the element with tag \"input\" has the value \"my text\"\n  * @example Then the element with name \"my-name\" has the value \"my text\"\n  * @example Then the element with CSS selector \".my-form-field\" has the value \"my text\"\n  * @example Then the element with XPath \"/html/body/article/input\" has the value \"my text\"\n  */\nconst formStepDefs = function () {\n  // input\n\n  this.When(/^I input the text \"([^\"]*)\" into the element with ID \"([^\"]*)\"$/, function (text, id) {\n    return form.inputText.call(this, text, element.findById.call(this, id).click());\n  });\n\n  this.When(/^I input the text \"([^\"]*)\" into the element with class \"([^\"]*)\"$/, function (text, className) {\n    return form.inputText.call(this, text, element.findByClassName.call(this, className).click());\n  });\n\n  this.When(/^I input the text \"([^\"]*)\" into the element with tag \"([^\"]*)\"$/, function (text, tagName) {\n    return form.inputText.call(this, text, element.findByTagName.call(this, tagName).click());\n  });\n\n  this.When(/^I input the text \"([^\"]*)\" into the element with name \"([^\"]*)\"$/, function (text, name) {\n    return form.inputText.call(this, text, element.findByName.call(this, name).click());\n  });\n\n  this.When(/^I input the text \"([^\"]*)\" into the element with CSS selector \"([^\"]*)\"$/, function (text, css) {\n    return form.inputText.call(this, text, element.findByCss.call(this, css).click());\n  });\n\n  this.When(/^I input the text \"([^\"]*)\" into the element with XPath \"([^\"]*)\"$/, function (text, xpath) {\n    return form.inputText.call(this, text, element.findByXPath.call(this, xpath).click());\n  });\n\n  // value checks\n\n  this.Then(/^the element with ID \"([^\"]*)\" has the value \"([^\"]*)\"$/, function (id, text) {\n    return expect(element.findById.call(this, id).getAttribute('value')).to.equal(text);\n  });\n\n  this.Then(/^the element with class \"([^\"]*)\" has the value \"([^\"]*)\"$/, function (className, text) {\n    return expect(element.findByClassName.call(this, className).getAttribute('value')).to.equal(text);\n  });\n\n  this.Then(/^the element with tag \"([^\"]*)\" has the value \"([^\"]*)\"$/, function (tagName, text) {\n    return expect(element.findByTagName.call(this, tagName).getAttribute('value')).to.equal(text);\n  });\n\n  this.Then(/^the element with name \"([^\"]*)\" has the value \"([^\"]*)\"$/, function (name, text) {\n    return expect(element.findByName.call(this, name).getAttribute('value')).to.equal(text);\n  });\n\n  this.Then(/^the element with CSS selector \"([^\"]*)\" has the value \"([^\"]*)\"$/, function (css, text) {\n    return expect(element.findByCss.call(this, css).getAttribute('value')).to.equal(text);\n  });\n\n  this.Then(/^the element with XPath \"([^\"]*)\" has the value \"([^\"]*)\"$/, function (xpath, text) {\n    return expect(element.findByXPath.call(this, xpath).getAttribute('value')).to.equal(text);\n  });\n};\n\nmodule.exports = formStepDefs;\n"
+  },
+  {
+    "__docId__": 18,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "element",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/form.js~element",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 19,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "form",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/form.js~form",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 2,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 20,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "expect",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/form.js~expect",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 21,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "formStepDefs",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/form.js~formStepDefs",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/form.js",
+    "importStyle": "formStepDefs",
+    "description": "Form step definitions for use in feature files",
+    "examples": [
+      "When I input the text \"my text\" into the element with ID \"my-id\"",
+      "When I input the text \"my text\" into the element with class \"my-class\"",
+      "When I input the text \"my text\" into the element with tag \"input\"",
+      "When I input the text \"my text\" into the element with name \"my-name\"",
+      "When I input the text \"my text\" into the element with CSS selector \".my-form-field\"",
+      "When I input the text \"my text\" into the element with XPath \"/html/body/article/input\"",
+      "Then the element with ID \"my-id\" has the value \"my text\"",
+      "Then the element with class \"my-class\" has the value \"my text\"",
+      "Then the element with tag \"input\" has the value \"my text\"",
+      "Then the element with name \"my-name\" has the value \"my text\"",
+      "Then the element with CSS selector \".my-form-field\" has the value \"my text\"",
+      "Then the element with XPath \"/html/body/article/input\" has the value \"my text\""
+    ],
+    "lineNumber": 21,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 22,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/step_definitions/text.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/text.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "const element = require('../support/element');\nconst expect = require('chai').expect;\n\n/**\n  * Text step definitions for use in feature files\n  * @access public\n  * @example Then the element with ID \"my-id\" has the text \"My text\"\n  * @example Then the element with class \"my-class\" has the text \"My text\"\n  * @example Then the element with tag \"a\" has the text \"My text\"\n  * @example Then the element with name \"my-name\" has the text \"My text\"\n  * @example Then the element with link text \"My link\" has the text \"My link\"\n  * @example Then the element with partial link text \"My li\" has the text \"My link\"\n  * @example Then the element with CSS selector \".my-element\" has the text \"My text\"\n  * @example Then the element with XPath \"/html/body/article/p\" has the text \"My text\"\n  */\nconst textStepDefs = function () {\n  this.Then(/^the element with ID \"([^\"]*)\" has the text \"([^\"]*)\"$/, function (id, text) {\n    return element.findById.call(this, id).getText()\n      .then((elemText) => {\n        expect(elemText).to.equal(text);\n      });\n  });\n\n  this.Then(/^the element with class \"([^\"]*)\" has the text \"([^\"]*)\"$/, function (className, text) {\n    return element.findByClassName.call(this, className).getText()\n      .then((elemText) => {\n        expect(elemText).to.equal(text);\n      });\n  });\n\n  this.Then(/^the element with tag \"([^\"]*)\" has the text \"([^\"]*)\"$/, function (tagName, text) {\n    return element.findByTagName.call(this, tagName).getText()\n      .then((elemText) => {\n        expect(elemText).to.equal(text);\n      });\n  });\n\n  this.Then(/^the element with name \"([^\"]*)\" has the text \"([^\"]*)\"$/, function (name, text) {\n    return element.findByName.call(this, name).getText()\n      .then((elemText) => {\n        expect(elemText).to.equal(text);\n      });\n  });\n\n  this.Then(/^the element with link text \"([^\"]*)\" has the text \"([^\"]*)\"$/, function (linkText, text) {\n    return element.findByLinkText.call(this, linkText).getText()\n      .then((elemText) => {\n        expect(elemText).to.equal(text);\n      });\n  });\n\n  this.Then(/^the element with partial link text \"([^\"]*)\" has the text \"([^\"]*)\"$/, function (partialLinkText, text) {\n    return element.findByPartialLinkText.call(this, partialLinkText).getText()\n      .then((elemText) => {\n        expect(elemText).to.equal(text);\n      });\n  });\n\n  this.Then(/^the element with CSS selector \"([^\"]*)\" has the text \"([^\"]*)\"$/, function (css, text) {\n    return element.findByCss.call(this, css).getText()\n      .then((elemText) => {\n        expect(elemText).to.equal(text);\n      });\n  });\n\n  this.Then(/^the element with XPath \"([^\"]*)\" has the text \"([^\"]*)\"$/, function (xpath, text) {\n    return element.findByXPath.call(this, xpath).getText()\n      .then((elemText) => {\n        expect(elemText).to.equal(text);\n      });\n  });\n};\n\nmodule.exports = textStepDefs;\n"
+  },
+  {
+    "__docId__": 23,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "element",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/text.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/text.js~element",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/text.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 24,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "expect",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/text.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/text.js~expect",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/text.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 2,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 25,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "textStepDefs",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/text.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/text.js~textStepDefs",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/text.js",
+    "importStyle": "textStepDefs",
+    "description": "Text step definitions for use in feature files",
+    "examples": [
+      "Then the element with ID \"my-id\" has the text \"My text\"",
+      "Then the element with class \"my-class\" has the text \"My text\"",
+      "Then the element with tag \"a\" has the text \"My text\"",
+      "Then the element with name \"my-name\" has the text \"My text\"",
+      "Then the element with link text \"My link\" has the text \"My link\"",
+      "Then the element with partial link text \"My li\" has the text \"My link\"",
+      "Then the element with CSS selector \".my-element\" has the text \"My text\"",
+      "Then the element with XPath \"/html/body/article/p\" has the text \"My text\""
+    ],
+    "lineNumber": 16,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 26,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/step_definitions/utility.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/utility.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst utility = require('../support/utility');\n\n/**\n  * Utility step definitions for use in feature files\n  * @access public\n  * @example When I sleep for \"3000\" milliseconds\n  */\nconst utilityStepDefs = function () {\n  this.When(/^I sleep for \"([^\"]*)\" milliseconds$/, function (ms) {\n    return utility.sleep.call(this, ms);\n  });\n};\n\nmodule.exports = utilityStepDefs;\n"
+  },
+  {
+    "__docId__": 27,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "utility",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/utility.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/utility.js~utility",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/utility.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 28,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "utilityStepDefs",
+    "memberof": "amido-frontend-e2e-framework/features/step_definitions/utility.js",
+    "longname": "amido-frontend-e2e-framework/features/step_definitions/utility.js~utilityStepDefs",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/step_definitions/utility.js",
+    "importStyle": "utilityStepDefs",
+    "description": "Utility step definitions for use in feature files",
+    "examples": [
+      "When I sleep for \"3000\" milliseconds"
+    ],
+    "lineNumber": 10,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 29,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/support/browser.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/support/browser.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "/**\n  * Browser supporting functions available for use in spec declarations\n  * @access public\n  * @example const browserSupport = require('amido-frontend-e2e-framework').support.browser;\n  * @example browserSupport.getUrl.call(this, url).then()...; // go to a URL\n  * @example browserSupport.getTitle.call(this).then()...; // get the browser's title\n  * @example browserSupport.switchToWindow.call(this, \"windowName\").then()...; // switch to a window\n  * @example browserSupport.switchToFrame.call(this, \"frameName\").then()...; // switch to a frame\n  * @example browserSupport.goBack.call(this).then()...; // go back in the browser\n  * @example browserSupport.goForward.call(this).then()...; // go forward in the browser\n  */\nconst browserSupport = {\n  getUrl(url) {\n    return this.driver.get(url);\n  },\n\n  getTitle() {\n    return this.driver.getTitle();\n  },\n\n  switchToWindow(windowName) {\n    return this.driver.switchTo().window(windowName);\n  },\n\n  switchToFrame(frameName) {\n    return this.driver.switchTo().frame(frameName);\n  },\n\n  goBack() {\n    return this.driver.back();\n  },\n\n  goForward() {\n    return this.driver.forward();\n  },\n};\n\nmodule.exports = browserSupport;\n"
+  },
+  {
+    "__docId__": 30,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "browserSupport",
+    "memberof": "amido-frontend-e2e-framework/features/support/browser.js",
+    "longname": "amido-frontend-e2e-framework/features/support/browser.js~browserSupport",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/browser.js",
+    "importStyle": "browserSupport",
+    "description": "Browser supporting functions available for use in spec declarations",
+    "examples": [
+      "const browserSupport = require('amido-frontend-e2e-framework').support.browser;",
+      "browserSupport.getUrl.call(this, url).then()...; // go to a URL",
+      "browserSupport.getTitle.call(this).then()...; // get the browser's title",
+      "browserSupport.switchToWindow.call(this, \"windowName\").then()...; // switch to a window",
+      "browserSupport.switchToFrame.call(this, \"frameName\").then()...; // switch to a frame",
+      "browserSupport.goBack.call(this).then()...; // go back in the browser",
+      "browserSupport.goForward.call(this).then()...; // go forward in the browser"
+    ],
+    "lineNumber": 12,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 31,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/support/config.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/support/config.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst config = require('../../lib/stores/config').get();\n\n/**\n  * Config bootstrapper\n  * @access private\n  */\nconst configSupport = function () {\n  this.setDefaultTimeout(config.defaultTimeout || (60 * 1000));\n};\n\nmodule.exports = configSupport;\n"
+  },
+  {
+    "__docId__": 32,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "config",
+    "memberof": "amido-frontend-e2e-framework/features/support/config.js",
+    "longname": "amido-frontend-e2e-framework/features/support/config.js~config",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/config.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 33,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "configSupport",
+    "memberof": "amido-frontend-e2e-framework/features/support/config.js",
+    "longname": "amido-frontend-e2e-framework/features/support/config.js~configSupport",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/config.js",
+    "importStyle": "configSupport",
+    "description": "Config bootstrapper",
+    "lineNumber": 9,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 34,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/support/element.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/support/element.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "/**\n  * Element supporting functions available for use in spec declarations\n  * @access public\n  * @example const elementSupport = require('amido-frontend-e2e-framework').support.element;\n  * @example elementSupport.find.call(this, { id: 'my-id '}).then((elem) => {... // find element using keyed object\n  * @example elementSupport.findById.call(this, 'my-id').then((elem) => {... // find element by ID\n  * @example elementSupport.findByClassName.call(this, 'my-class').then((elem) => {... // find element/s by class\n  * @example elementSupport.findByTagName.call(this, 'a').then((elem) => {... // find element/s by tag name\n  * @example elementSupport.findByName.call(this, 'my-name').then((elem) => {... // find element/s by name\n  * @example elementSupport.findByLinkText.call(this, 'Link text').then((elem) => {... // find element/s by link text\n  * @example elementSupport.findByPartialLinkText.call(this, 'Link te').then((elem) => {... // find element/s by partial link text\n  * @example elementSupport.findByCss.call(this, '.my-selector').then((elem) => {... // find element/s by CSS selector\n  * @example elementSupport.findByXPath.call(this, '/html/body/article/p').then((elem) => {... // find element/s by XPath\n  */\nconst elementSupport = {\n  find(obj) {\n    return this.driver.find(obj);\n  },\n\n  findById(id) {\n    return this.driver.findElement({ id });\n  },\n\n  findByClassName(className) {\n    return this.driver.findElement({ className });\n  },\n\n  findByTagName(tagName) {\n    return this.driver.findElement({ tagName });\n  },\n\n  findByName(name) {\n    return this.driver.findElement({ name });\n  },\n\n  findByLinkText(linkText) {\n    return this.driver.findElement({ linkText });\n  },\n\n  findByPartialLinkText(partialLinkText) {\n    return this.driver.findElement({ partialLinkText });\n  },\n\n  findByCss(css) {\n    return this.driver.findElement({ css });\n  },\n\n  findByXPath(xpath) {\n    return this.driver.findElement({ xpath });\n  },\n};\n\nmodule.exports = elementSupport;\n"
+  },
+  {
+    "__docId__": 35,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "elementSupport",
+    "memberof": "amido-frontend-e2e-framework/features/support/element.js",
+    "longname": "amido-frontend-e2e-framework/features/support/element.js~elementSupport",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/element.js",
+    "importStyle": "elementSupport",
+    "description": "Element supporting functions available for use in spec declarations",
+    "examples": [
+      "const elementSupport = require('amido-frontend-e2e-framework').support.element;",
+      "elementSupport.find.call(this, { id: 'my-id '}).then((elem) => {... // find element using keyed object",
+      "elementSupport.findById.call(this, 'my-id').then((elem) => {... // find element by ID",
+      "elementSupport.findByClassName.call(this, 'my-class').then((elem) => {... // find element/s by class",
+      "elementSupport.findByTagName.call(this, 'a').then((elem) => {... // find element/s by tag name",
+      "elementSupport.findByName.call(this, 'my-name').then((elem) => {... // find element/s by name",
+      "elementSupport.findByLinkText.call(this, 'Link text').then((elem) => {... // find element/s by link text",
+      "elementSupport.findByPartialLinkText.call(this, 'Link te').then((elem) => {... // find element/s by partial link text",
+      "elementSupport.findByCss.call(this, '.my-selector').then((elem) => {... // find element/s by CSS selector",
+      "elementSupport.findByXPath.call(this, '/html/body/article/p').then((elem) => {... // find element/s by XPath"
+    ],
+    "lineNumber": 15,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 36,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/support/form.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/support/form.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "/**\n  * Form supporting functions available for use in spec declarations\n  * @access public\n  * @example const formSupport = require('amido-frontend-e2e-framework').support.form;\n  * @example formSupport.inputText.call(this, 'My text', elem); // input the text into an element\n  * @example formSupport.submit.call(this, elem); // call the submit() method on the elem's closest form\n  */\nconst formSupport = {\n  inputText(text, elem) {\n    return elem.sendKeys(text);\n  },\n\n  submit(elem) {\n    return elem.submit();\n  },\n};\n\nmodule.exports = formSupport;\n"
+  },
+  {
+    "__docId__": 37,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "formSupport",
+    "memberof": "amido-frontend-e2e-framework/features/support/form.js",
+    "longname": "amido-frontend-e2e-framework/features/support/form.js~formSupport",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/form.js",
+    "importStyle": "formSupport",
+    "description": "Form supporting functions available for use in spec declarations",
+    "examples": [
+      "const formSupport = require('amido-frontend-e2e-framework').support.form;",
+      "formSupport.inputText.call(this, 'My text', elem); // input the text into an element",
+      "formSupport.submit.call(this, elem); // call the submit() method on the elem's closest form"
+    ],
+    "lineNumber": 8,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 38,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/support/text.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/support/text.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "/**\n  * Text supporting functions available for use in spec declarations\n  * @access public\n  * @example const textSupport = require('amido-frontend-e2e-framework').support.text;\n  * @example textSupport.getText.call(this, elem).then((text) => {... // get the innerText value of an element\n  */\nconst textSupport = {\n  getText(element) {\n    return element.getText();\n  },\n};\n\nmodule.exports = textSupport;\n"
+  },
+  {
+    "__docId__": 39,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "textSupport",
+    "memberof": "amido-frontend-e2e-framework/features/support/text.js",
+    "longname": "amido-frontend-e2e-framework/features/support/text.js~textSupport",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/text.js",
+    "importStyle": "textSupport",
+    "description": "Text supporting functions available for use in spec declarations",
+    "examples": [
+      "const textSupport = require('amido-frontend-e2e-framework').support.text;",
+      "textSupport.getText.call(this, elem).then((text) => {... // get the innerText value of an element"
+    ],
+    "lineNumber": 7,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 40,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/support/utility.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/support/utility.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "const seleniumWebdriver = require('selenium-webdriver');\n\n/**\n  * Utility supporting functions available for use in spec declarations\n  * @access public\n  * @example const utilitySupport = require('amido-frontend-e2e-framework').support.utility;\n  * @example utilitySupport.wait.call(this, myConditionFunction, 3000); // wait 3s for myConditionFunction to pass - see http://www.seleniumhq.org/docs/03_webdriver.jsp\n  * @example utilitySupport.waitForElementLocatedById.call(this, 'my-id', 3000); // wait 3s for element with ID to be located\n  * @example utilitySupport.waitForElementLocatedByClassName.call(this, 'my-class', 3000); // wait 3s for element with class to be located\n  * @example utilitySupport.waitForElementLocatedByTagName.call(this, 'a', 3000); // wait 3s for element with tag name to be located\n  * @example utilitySupport.waitForElementLocatedByName.call(this, 'my-name', 3000); // wait 3s for element with name to be located\n  * @example utilitySupport.waitForElementLocatedByLinkText.call(this, 'My link', 3000); // wait 3s for element with link text to be located\n  * @example utilitySupport.waitForElementLocatedByPartialLinkText.call(this, 'My li', 3000); // wait 3s for element with partial link text to be located\n  * @example utilitySupport.waitForElementLocatedByCss.call(this, '.my-class', 3000); // wait 3s for element with CSS selector to be located\n  * @example utilitySupport.waitForElementLocatedByXPath.call(this, '/html/body/article/p', 3000); // wait 3s for element with XPath to be located\n  * @example utilitySupport.sleep.call(this, 3000); // sleep the execution for 3s\n  * @example utilitySupport.takeScreenshot.call(this).then((screenshotData) => { // take a screenshot (returns binary data which must be saved to disk)\n  */\nconst utilitySupport = {\n  wait(condition, ms) {\n    return this.driver.wait(condition, ms);\n  },\n\n  waitForElementLocatedById(id, ms) {\n    const condition = seleniumWebdriver.until.elementLocated({ id });\n\n    return this.driver.wait(condition, ms);\n  },\n\n  waitForElementLocatedByClassName(className, ms) {\n    const condition = seleniumWebdriver.until.elementLocated({ className });\n\n    return this.driver.wait(condition, ms);\n  },\n\n  waitForElementLocatedByTagName(tagName, ms) {\n    const condition = seleniumWebdriver.until.elementLocated({ tagName });\n\n    return this.driver.wait(condition, ms);\n  },\n\n  waitForElementLocatedByName(name, ms) {\n    const condition = seleniumWebdriver.until.elementLocated({ name });\n\n    return this.driver.wait(condition, ms);\n  },\n\n  waitForElementLocatedByLinkText(linkText, ms) {\n    const condition = seleniumWebdriver.until.elementLocated({ linkText });\n\n    return this.driver.wait(condition, ms);\n  },\n\n  waitForElementLocatedByPartialLinkText(partialLinkText, ms) {\n    const condition = seleniumWebdriver.until.elementLocated({ partialLinkText });\n\n    return this.driver.wait(condition, ms);\n  },\n\n  waitForElementLocatedByCss(css, ms) {\n    const condition = seleniumWebdriver.until.elementLocated({ css });\n\n    return this.driver.wait(condition, ms);\n  },\n\n  waitForElementLocatedByXPath(xpath, ms) {\n    const condition = seleniumWebdriver.until.elementLocated({ xpath });\n\n    return this.driver.wait(condition, ms);\n  },\n\n  sleep(ms) {\n    return this.driver.sleep(ms);\n  },\n\n  takeScreenshot() {\n    return this.driver.takeScreenshot();\n  },\n};\n\nmodule.exports = utilitySupport;\n"
+  },
+  {
+    "__docId__": 41,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "seleniumWebdriver",
+    "memberof": "amido-frontend-e2e-framework/features/support/utility.js",
+    "longname": "amido-frontend-e2e-framework/features/support/utility.js~seleniumWebdriver",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/utility.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 42,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "utilitySupport",
+    "memberof": "amido-frontend-e2e-framework/features/support/utility.js",
+    "longname": "amido-frontend-e2e-framework/features/support/utility.js~utilitySupport",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/utility.js",
+    "importStyle": "utilitySupport",
+    "description": "Utility supporting functions available for use in spec declarations",
+    "examples": [
+      "const utilitySupport = require('amido-frontend-e2e-framework').support.utility;",
+      "utilitySupport.wait.call(this, myConditionFunction, 3000); // wait 3s for myConditionFunction to pass - see http://www.seleniumhq.org/docs/03_webdriver.jsp",
+      "utilitySupport.waitForElementLocatedById.call(this, 'my-id', 3000); // wait 3s for element with ID to be located",
+      "utilitySupport.waitForElementLocatedByClassName.call(this, 'my-class', 3000); // wait 3s for element with class to be located",
+      "utilitySupport.waitForElementLocatedByTagName.call(this, 'a', 3000); // wait 3s for element with tag name to be located",
+      "utilitySupport.waitForElementLocatedByName.call(this, 'my-name', 3000); // wait 3s for element with name to be located",
+      "utilitySupport.waitForElementLocatedByLinkText.call(this, 'My link', 3000); // wait 3s for element with link text to be located",
+      "utilitySupport.waitForElementLocatedByPartialLinkText.call(this, 'My li', 3000); // wait 3s for element with partial link text to be located",
+      "utilitySupport.waitForElementLocatedByCss.call(this, '.my-class', 3000); // wait 3s for element with CSS selector to be located",
+      "utilitySupport.waitForElementLocatedByXPath.call(this, '/html/body/article/p', 3000); // wait 3s for element with XPath to be located",
+      "utilitySupport.sleep.call(this, 3000); // sleep the execution for 3s",
+      "utilitySupport.takeScreenshot.call(this).then((screenshotData) => { // take a screenshot (returns binary data which must be saved to disk)"
+    ],
+    "lineNumber": 19,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 43,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/features/support/world.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/features/support/world.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst config = require('../../lib/stores/config').get();\nconst fs = require('fs');\n\nconst environmentIncludePath = `../../lib/environments/${config.environment}.js`;\n\nif (!fs.existsSync(`${__dirname}/${environmentIncludePath}`)) {\n  throw new Error(`Path ${environmentIncludePath} does not exist - have you checked your \"environment\" argument?`);\n}\n\nconst world = require(environmentIncludePath);\n\n/**\n  * World bootstrapper\n  * @access private\n  */\nmodule.exports = world;\n"
+  },
+  {
+    "__docId__": 44,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "config",
+    "memberof": "amido-frontend-e2e-framework/features/support/world.js",
+    "longname": "amido-frontend-e2e-framework/features/support/world.js~config",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/world.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 45,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "fs",
+    "memberof": "amido-frontend-e2e-framework/features/support/world.js",
+    "longname": "amido-frontend-e2e-framework/features/support/world.js~fs",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/world.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 46,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "environmentIncludePath",
+    "memberof": "amido-frontend-e2e-framework/features/support/world.js",
+    "longname": "amido-frontend-e2e-framework/features/support/world.js~environmentIncludePath",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/world.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 47,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "world",
+    "memberof": "amido-frontend-e2e-framework/features/support/world.js",
+    "longname": "amido-frontend-e2e-framework/features/support/world.js~world",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/features/support/world.js",
+    "importStyle": "world",
+    "description": "World bootstrapper",
+    "lineNumber": 12,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 48,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/index.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/index.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst seleniumWebdriver = require('selenium-webdriver');\nconst chai = require('chai');\nconst api = require('./api');\nconst browser = require('./features/support/browser');\nconst element = require('./features/support/element');\nconst form = require('./features/support/form');\nconst text = require('./features/support/text');\nconst utility = require('./features/support/utility');\n\n/**\n  * AmidoFrontendE2EFramework\n  * Public framework interface\n  * All implementing parties should use the APIs provided by this interface and should *not* override them in their own code or package.json\n  * @access public\n  * @example const seleniumWebDriver = require('amido-frontend-e2e-framework').seleniumWebDriver;\n  * @example const chai = require('amido-frontend-e2e-framework').chai;\n  * @example const api = require('amido-frontend-e2e-framework').api;\n  * @example const browserSupport = require('amido-frontend-e2e-framework').support.browser;\n  * @example const elementSupport = require('amido-frontend-e2e-framework').support.element;\n  * @example const formSupport = require('amido-frontend-e2e-framework').support.form;\n  * @example const textSupport = require('amido-frontend-e2e-framework').support.text;\n  * @example const utilitySupport = require('amido-frontend-e2e-framework').support.utility;\n  */\nconst AmidoFrontendE2EFramework = {\n  seleniumWebdriver,\n  chai,\n\n  api,\n\n  support: {\n    browser,\n    element,\n    form,\n    text,\n    utility,\n  },\n};\n\nmodule.exports = AmidoFrontendE2EFramework;\n"
+  },
+  {
+    "__docId__": 49,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "seleniumWebdriver",
+    "memberof": "amido-frontend-e2e-framework/index.js",
+    "longname": "amido-frontend-e2e-framework/index.js~seleniumWebdriver",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 50,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "chai",
+    "memberof": "amido-frontend-e2e-framework/index.js",
+    "longname": "amido-frontend-e2e-framework/index.js~chai",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 51,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "api",
+    "memberof": "amido-frontend-e2e-framework/index.js",
+    "longname": "amido-frontend-e2e-framework/index.js~api",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 52,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "browser",
+    "memberof": "amido-frontend-e2e-framework/index.js",
+    "longname": "amido-frontend-e2e-framework/index.js~browser",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 53,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "element",
+    "memberof": "amido-frontend-e2e-framework/index.js",
+    "longname": "amido-frontend-e2e-framework/index.js~element",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 54,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "form",
+    "memberof": "amido-frontend-e2e-framework/index.js",
+    "longname": "amido-frontend-e2e-framework/index.js~form",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 8,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 55,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "text",
+    "memberof": "amido-frontend-e2e-framework/index.js",
+    "longname": "amido-frontend-e2e-framework/index.js~text",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 9,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 56,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "utility",
+    "memberof": "amido-frontend-e2e-framework/index.js",
+    "longname": "amido-frontend-e2e-framework/index.js~utility",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 10,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 57,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "AmidoFrontendE2EFramework",
+    "memberof": "amido-frontend-e2e-framework/index.js",
+    "longname": "amido-frontend-e2e-framework/index.js~AmidoFrontendE2EFramework",
+    "access": "public",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/index.js",
+    "importStyle": "AmidoFrontendE2EFramework",
+    "description": "AmidoFrontendE2EFramework\nPublic framework interface\nAll implementing parties should use the APIs provided by this interface and should *not* override them in their own code or package.json",
+    "examples": [
+      "const seleniumWebDriver = require('amido-frontend-e2e-framework').seleniumWebDriver;",
+      "const chai = require('amido-frontend-e2e-framework').chai;",
+      "const api = require('amido-frontend-e2e-framework').api;",
+      "const browserSupport = require('amido-frontend-e2e-framework').support.browser;",
+      "const elementSupport = require('amido-frontend-e2e-framework').support.element;",
+      "const formSupport = require('amido-frontend-e2e-framework').support.form;",
+      "const textSupport = require('amido-frontend-e2e-framework').support.text;",
+      "const utilitySupport = require('amido-frontend-e2e-framework').support.utility;"
+    ],
+    "lineNumber": 26,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 58,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/lib/config.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/lib/config.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst parseArgs = require('minimist');\nconst defaultConfig = require('../config/default');\n\n/**\n  * Config helper\n  * @access private\n  */\nconst configHelper = {\n  extendFromDefaultObject: (config) => {\n    const args = parseArgs(process.argv.splice(2));\n\n    return Object.assign(defaultConfig, args, config);\n  },\n\n  getCliArgumentsFromObject: (config) => {\n    const cliArgs = [\n      'node',\n      './node_modules/cucumber/bin/cucumber.js',\n\n      // feature files to run\n\n      config.featuresDir,\n\n      // supporting files from framework\n\n      '--require',\n      `${config.frameworkBaseDir}/features`,\n\n      // files from implementing project\n\n      '--require',\n      config.featuresDir,\n    ];\n\n    if (config.createReport && config.reportsDir) {\n      cliArgs.push('--format');\n      cliArgs.push(`json:${config.reportsDir}/report-${config.fileSuffix}.json`);\n    }\n\n    if (config.debug) {\n      cliArgs.push('--debug');\n    }\n\n    return cliArgs;\n  },\n};\n\nmodule.exports = configHelper;\n"
+  },
+  {
+    "__docId__": 59,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "parseArgs",
+    "memberof": "amido-frontend-e2e-framework/lib/config.js",
+    "longname": "amido-frontend-e2e-framework/lib/config.js~parseArgs",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/config.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 60,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "defaultConfig",
+    "memberof": "amido-frontend-e2e-framework/lib/config.js",
+    "longname": "amido-frontend-e2e-framework/lib/config.js~defaultConfig",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/config.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 61,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "configHelper",
+    "memberof": "amido-frontend-e2e-framework/lib/config.js",
+    "longname": "amido-frontend-e2e-framework/lib/config.js~configHelper",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/config.js",
+    "importStyle": "configHelper",
+    "description": "Config helper",
+    "lineNumber": 10,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 62,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/lib/cucumber.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/lib/cucumber.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst Promise = require('bluebird');\nconst cucumber = require('cucumber/lib/cucumber');\nconst CucumberHtmlReport = require('cucumber-html-report');\nconst logger = require('./logger');\n\n/**\n  * Cucumber helper\n  * @access private\n  */\nconst cucumberHelper = {\n  run: (args, config) => {\n    return new Promise((resolve, reject) => {\n      cucumber.Cli(args).run((succeeded) => {\n        // generate report from json if requested\n\n        const fileName = `report-${config.fileSuffix}.html`;\n\n        if (config.createReport && config.reportsDir) {\n          new CucumberHtmlReport({\n            source: `${config.reportsDir}/report-${config.fileSuffix}.json`,\n            dest: config.reportsDir,\n            name: fileName,\n            title: config.name,\n          }).createReport();\n\n          logger.info(`Report ${fileName} generated`);\n          logger.lineBreak();\n        }\n\n        if (succeeded) {\n          return resolve();\n        }\n\n        return reject();\n      });\n    });\n  },\n};\n\nmodule.exports = cucumberHelper;\n"
+  },
+  {
+    "__docId__": 63,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "Promise",
+    "memberof": "amido-frontend-e2e-framework/lib/cucumber.js",
+    "longname": "amido-frontend-e2e-framework/lib/cucumber.js~Promise",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/cucumber.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 64,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "cucumber",
+    "memberof": "amido-frontend-e2e-framework/lib/cucumber.js",
+    "longname": "amido-frontend-e2e-framework/lib/cucumber.js~cucumber",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/cucumber.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 65,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "CucumberHtmlReport",
+    "memberof": "amido-frontend-e2e-framework/lib/cucumber.js",
+    "longname": "amido-frontend-e2e-framework/lib/cucumber.js~CucumberHtmlReport",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/cucumber.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 66,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "logger",
+    "memberof": "amido-frontend-e2e-framework/lib/cucumber.js",
+    "longname": "amido-frontend-e2e-framework/lib/cucumber.js~logger",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/cucumber.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 67,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "cucumberHelper",
+    "memberof": "amido-frontend-e2e-framework/lib/cucumber.js",
+    "longname": "amido-frontend-e2e-framework/lib/cucumber.js~cucumberHelper",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/cucumber.js",
+    "importStyle": "cucumberHelper",
+    "description": "Cucumber helper",
+    "lineNumber": 12,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 68,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/lib/directory.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/lib/directory.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst fs = require('fs');\n\n/**\n  * Directory helper\n  * @access private\n  */\nconst directoryHelper = {\n  create: (config) => {\n    if (config.reportsDir) {\n      if (!fs.existsSync(config.reportsDir)) {\n        fs.mkdirSync(config.reportsDir);\n      }\n    }\n\n    if (config.screenshotsDir) {\n      if (!fs.existsSync(config.screenshotsDir)) {\n        fs.mkdirSync(config.screenshotsDir);\n      }\n    }\n  },\n};\n\nmodule.exports = directoryHelper;\n"
+  },
+  {
+    "__docId__": 69,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "fs",
+    "memberof": "amido-frontend-e2e-framework/lib/directory.js",
+    "longname": "amido-frontend-e2e-framework/lib/directory.js~fs",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/directory.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 70,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "directoryHelper",
+    "memberof": "amido-frontend-e2e-framework/lib/directory.js",
+    "longname": "amido-frontend-e2e-framework/lib/directory.js~directoryHelper",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/directory.js",
+    "importStyle": "directoryHelper",
+    "description": "Directory helper",
+    "lineNumber": 9,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 71,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/lib/environments/local.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/lib/environments/local.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst webdriver = require('selenium-webdriver');\nconst fs = require('fs');\nconst config = require('../../lib/stores/config').get();\nconst screenshot = require('../../lib/screenshot');\nconst logger = require('../../lib/logger');\n\n/**\n  * Local environment definition\n  * @access private\n  */\nconst localEnvironment = function () {\n  // set up driver\n\n  this.Before(function (Scenario, done) {\n    switch (config.localDriver) {\n      case 'chrome':\n      default: {\n        const chrome = require('selenium-webdriver/chrome');\n        const chromeDriverPath = require('chromedriver').path;\n\n        const service = new chrome.ServiceBuilder(chromeDriverPath).build();\n        chrome.setDefaultService(service);\n\n        this.driver = new webdriver.Builder()\n          .forBrowser('chrome')\n          .build();\n        break;\n      }\n\n      case 'firefox': {\n        // this is stubbed for now - needs fixing at a later date\n\n        // const firefox = require('selenium-webdriver/firefox');\n        // const geckoDriverPath = require('geckodriver').path;\n        //\n        // const binary = new firefox.Binary(geckoDriverPath);\n        // const options = new firefox.Options()\n        //   .setBinary(binary);\n        //\n        // this.driver = new firefox.Driver(options);\n        break;\n      }\n    }\n\n    done();\n  });\n\n  // take screenshot if step fails\n\n  this.StepResult(function (StepResult, done) {\n    if (StepResult.getStatus() === 'failed') {\n      // take screenshot\n\n      screenshot.take(config, this.driver)\n        .then((data) => {\n          if (data) {\n            const fileName = `screenshot-${config.fileSuffix}.png`;\n\n            fs.writeFile(`${config.screenshotsDir}/${fileName}`, data, 'base64', () => {\n              logger.info(`Screenshot ${fileName} taken`);\n              logger.lineBreak();\n            });\n          }\n        });\n    }\n\n    done();\n  });\n\n  // close browser instance after all features are run\n\n  this.After(function (Scenario, done) {\n    this.driver.close();\n\n    setTimeout(function () {\n      done();\n    }, 500);\n  });\n};\n\nmodule.exports = localEnvironment;\n"
+  },
+  {
+    "__docId__": 72,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "webdriver",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/local.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/local.js~webdriver",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/local.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 73,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "fs",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/local.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/local.js~fs",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/local.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 74,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "config",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/local.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/local.js~config",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/local.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 75,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "screenshot",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/local.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/local.js~screenshot",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/local.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 76,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "logger",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/local.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/local.js~logger",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/local.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 77,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "localEnvironment",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/local.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/local.js~localEnvironment",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/local.js",
+    "importStyle": "localEnvironment",
+    "description": "Local environment definition",
+    "lineNumber": 13,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 78,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst webdriver = require('selenium-webdriver');\nconst browserstack = require('browserstack-local');\nconst config = require('../stores/config').get();\n\nconst server = config.browserstack.server || process.env.BROWSERSTACK_SERVER;\nconst username = config.browserstack.username || process.env.BROWSERSTACK_USERNAME;\nconst accessKey = config.browserstack.accessKey || process.env.BROWSERSTACK_ACCESS_KEY;\nconst capabilities = config.browserstack.capabilities;\n\n/**\n  * Remote envrionment definition\n  * @access private\n  */\nconst remoteEnvironment = function () {\n  let browserStackLocal;\n\n  // set up driver\n\n  this.Before(function (Scenario, done) {\n    browserStackLocal = new browserstack.Local();\n\n    browserStackLocal.start({\n      key: accessKey,\n    }, (err) => {\n      if (err) {\n        throw new Error(err);\n      }\n\n      this.driver = new webdriver.Builder()\n        .usingServer(`http://${server}/wd/hub`)\n        .withCapabilities(Object.assign(capabilities, {\n          'browserstack.user': username,\n          'browserstack.key': accessKey,\n        }))\n        .build();\n\n      done();\n    });\n  });\n\n  // tear down driver\n\n  this.After(function (Scenario, done) {\n    this.driver.quit()\n      .then(() => {\n        if (browserStackLocal) {\n          return browserStackLocal.stop(done);\n        }\n\n        return done();\n      });\n  });\n};\n\nmodule.exports = remoteEnvironment;\n"
+  },
+  {
+    "__docId__": 79,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "webdriver",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/remote.js~webdriver",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/remote.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 80,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "browserstack",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/remote.js~browserstack",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/remote.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 81,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "config",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/remote.js~config",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/remote.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 82,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "server",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/remote.js~server",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/remote.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 83,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "username",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/remote.js~username",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/remote.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 8,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 84,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "accessKey",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/remote.js~accessKey",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/remote.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 9,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 85,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "capabilities",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/remote.js~capabilities",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/remote.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 10,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 86,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "remoteEnvironment",
+    "memberof": "amido-frontend-e2e-framework/lib/environments/remote.js",
+    "longname": "amido-frontend-e2e-framework/lib/environments/remote.js~remoteEnvironment",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/environments/remote.js",
+    "importStyle": "remoteEnvironment",
+    "description": "Remote envrionment definition",
+    "lineNumber": 16,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 87,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/lib/logger.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/lib/logger.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "require('colors');\n\n/**\n  * Logger helper\n  * @access private\n  */\nconst loggerHelper = {\n  success: (msg) => {\n    console.log(msg.green);\n  },\n\n  info: (msg) => {\n    console.log(msg.cyan);\n  },\n\n  warning: (msg) => {\n    console.log(msg.yellow);\n  },\n\n  danger: (msg) => {\n    console.log(msg.red);\n  },\n\n  title: (msg) => {\n    console.log(msg.underline.yellow);\n  },\n\n  lineBreak: () => {\n    console.log('');\n  },\n};\n\nmodule.exports = loggerHelper;\n"
+  },
+  {
+    "__docId__": 88,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "loggerHelper",
+    "memberof": "amido-frontend-e2e-framework/lib/logger.js",
+    "longname": "amido-frontend-e2e-framework/lib/logger.js~loggerHelper",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/logger.js",
+    "importStyle": "loggerHelper",
+    "description": "Logger helper",
+    "lineNumber": 7,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 89,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/lib/runner.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/lib/runner.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst configStore = require('./stores/config');\nconst directory = require('./directory');\nconst co = require('co');\nconst cucumberHelper = require('./cucumber');\nconst logger = require('./logger');\n\n/**\n  * Runner helper\n  * @access private\n  */\nconst runnerHelper = (args, callback) => {\n  const config = configStore.get();\n\n  directory.create(config);\n\n  return co(function* () {\n    try {\n      if (config.environment === 'remote') {\n        logger.info(`Executing with the following capability on ${config.browserstack.server}:`);\n        logger.info(JSON.stringify(config.browserstack.capabilities));\n        logger.lineBreak();\n      } else if (config.environment === 'local') {\n        logger.info('Executing locally');\n      }\n\n      yield cucumberHelper.run(args, config, callback);\n\n      logger.lineBreak();\n    } catch (e) {\n      logger.error('An error occurred when executing Cucumber:');\n      logger.error(e.stack);\n    }\n  });\n};\n\nmodule.exports = runnerHelper;\n"
+  },
+  {
+    "__docId__": 90,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "configStore",
+    "memberof": "amido-frontend-e2e-framework/lib/runner.js",
+    "longname": "amido-frontend-e2e-framework/lib/runner.js~configStore",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/runner.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 91,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "directory",
+    "memberof": "amido-frontend-e2e-framework/lib/runner.js",
+    "longname": "amido-frontend-e2e-framework/lib/runner.js~directory",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/runner.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 92,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "co",
+    "memberof": "amido-frontend-e2e-framework/lib/runner.js",
+    "longname": "amido-frontend-e2e-framework/lib/runner.js~co",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/runner.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 93,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "cucumberHelper",
+    "memberof": "amido-frontend-e2e-framework/lib/runner.js",
+    "longname": "amido-frontend-e2e-framework/lib/runner.js~cucumberHelper",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/runner.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 94,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "logger",
+    "memberof": "amido-frontend-e2e-framework/lib/runner.js",
+    "longname": "amido-frontend-e2e-framework/lib/runner.js~logger",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/runner.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 95,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "runnerHelper",
+    "memberof": "amido-frontend-e2e-framework/lib/runner.js",
+    "longname": "amido-frontend-e2e-framework/lib/runner.js~runnerHelper",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/runner.js",
+    "importStyle": "runnerHelper",
+    "description": "Runner helper",
+    "lineNumber": 13,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 96,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/lib/screenshot.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/lib/screenshot.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nconst Promise = require('bluebird');\n\n/**\n  * Screenshot helper\n  * @access private\n  */\nconst screenshotHelper = {\n  take: (config, driver) => {\n    return new Promise((resolve) => {\n      if (config.takeScreenshotOnFailure && config.screenshotsDir) {\n        return driver.takeScreenshot()\n          .then((data) => {\n            return resolve(data);\n          });\n      }\n\n      return resolve(null);\n    });\n  },\n};\n\nmodule.exports = screenshotHelper;\n"
+  },
+  {
+    "__docId__": 97,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "Promise",
+    "memberof": "amido-frontend-e2e-framework/lib/screenshot.js",
+    "longname": "amido-frontend-e2e-framework/lib/screenshot.js~Promise",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/screenshot.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 98,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "screenshotHelper",
+    "memberof": "amido-frontend-e2e-framework/lib/screenshot.js",
+    "longname": "amido-frontend-e2e-framework/lib/screenshot.js~screenshotHelper",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/screenshot.js",
+    "importStyle": "screenshotHelper",
+    "description": "Screenshot helper",
+    "lineNumber": 9,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 99,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "amido-frontend-e2e-framework/lib/stores/config.js",
+    "memberof": null,
+    "longname": "amido-frontend-e2e-framework/lib/stores/config.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nlet config = {};\n\n/**\n  * Config store\n  * @access private\n  */\nconst configStore = {\n  set: (_config) => {\n    config = _config;\n  },\n\n  get: () => {\n    return config;\n  },\n};\n\nmodule.exports = configStore;\n"
+  },
+  {
+    "__docId__": 100,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "config",
+    "memberof": "amido-frontend-e2e-framework/lib/stores/config.js",
+    "longname": "amido-frontend-e2e-framework/lib/stores/config.js~config",
+    "access": null,
+    "export": false,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/stores/config.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 101,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "configStore",
+    "memberof": "amido-frontend-e2e-framework/lib/stores/config.js",
+    "longname": "amido-frontend-e2e-framework/lib/stores/config.js~configStore",
+    "access": "private",
+    "export": true,
+    "importPath": "amido-frontend-e2e-framework/amido-frontend-e2e-framework/lib/stores/config.js",
+    "importStyle": "configStore",
+    "description": "Config store",
+    "lineNumber": 9,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 103,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Infinity",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Infinity",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 104,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "NaN",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~NaN",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 105,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "undefined",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~undefined",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 106,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "null",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~null",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 107,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Object",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 108,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~object",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 109,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Function",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 110,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~function",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 111,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Boolean",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 112,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~boolean",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 113,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Symbol",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Symbol",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 114,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Error",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Error",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 115,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "EvalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~EvalError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 116,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "InternalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~InternalError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 117,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "RangeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RangeError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 118,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "ReferenceError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ReferenceError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 119,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "SyntaxError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~SyntaxError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 120,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "TypeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~TypeError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 121,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "URIError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~URIError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 122,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Number",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 123,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~number",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 124,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Date",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Date",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 125,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "String",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~String",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 126,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "string",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~string",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 127,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "RegExp",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RegExp",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 128,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 129,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int8Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 130,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 131,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint8ClampedArray",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8ClampedArray",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 132,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int16Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 133,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint16Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 134,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 135,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 136,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Float32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 137,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Float64Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float64Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 138,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Map",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Map",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 139,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Set",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Set",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 140,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "WeakMap",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakMap",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 141,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "WeakSet",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakSet",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 142,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "ArrayBuffer",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ArrayBuffer",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 143,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "DataView",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~DataView",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 144,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "JSON",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~JSON",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 145,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Promise",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Promise",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 146,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Generator",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Generator",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 147,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "GeneratorFunction",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~GeneratorFunction",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 148,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Reflect",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Reflect",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 149,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Proxy",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Proxy",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 151,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "CanvasRenderingContext2D",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~CanvasRenderingContext2D",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 152,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "DocumentFragment",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~DocumentFragment",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 153,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Element",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Element",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 154,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Event",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Event",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 155,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Node",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Node",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 156,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "NodeList",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~NodeList",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 157,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "XMLHttpRequest",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~XMLHttpRequest",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 158,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "AudioContext",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~AudioContext",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  }
+]

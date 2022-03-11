@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">amido-frontend-e2e-framework/index.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://bitbucket.org/amidoltd/amido-frontend-e2e-framework.git">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-api">api</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-AmidoFrontendE2EFramework">AmidoFrontendE2EFramework</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/step_definitions</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-browserStepDefs">browserStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-elementStepDefs">elementStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-formStepDefs">formStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-textStepDefs">textStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-utilityStepDefs">utilityStepDefs</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/support</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-browserSupport">browserSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-elementSupport">elementSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-formSupport">formSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-textSupport">textSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-utilitySupport">utilitySupport</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">amido-frontend-e2e-framework/index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const seleniumWebdriver = require(&apos;selenium-webdriver&apos;);
+const chai = require(&apos;chai&apos;);
+const api = require(&apos;./api&apos;);
+const browser = require(&apos;./features/support/browser&apos;);
+const element = require(&apos;./features/support/element&apos;);
+const form = require(&apos;./features/support/form&apos;);
+const text = require(&apos;./features/support/text&apos;);
+const utility = require(&apos;./features/support/utility&apos;);
+
+/**
+  * AmidoFrontendE2EFramework
+  * Public framework interface
+  * All implementing parties should use the APIs provided by this interface and should *not* override them in their own code or package.json
+  * @access public
+  * @example const seleniumWebDriver = require(&apos;amido-frontend-e2e-framework&apos;).seleniumWebDriver;
+  * @example const chai = require(&apos;amido-frontend-e2e-framework&apos;).chai;
+  * @example const api = require(&apos;amido-frontend-e2e-framework&apos;).api;
+  * @example const browserSupport = require(&apos;amido-frontend-e2e-framework&apos;).support.browser;
+  * @example const elementSupport = require(&apos;amido-frontend-e2e-framework&apos;).support.element;
+  * @example const formSupport = require(&apos;amido-frontend-e2e-framework&apos;).support.form;
+  * @example const textSupport = require(&apos;amido-frontend-e2e-framework&apos;).support.text;
+  * @example const utilitySupport = require(&apos;amido-frontend-e2e-framework&apos;).support.utility;
+  */
+const AmidoFrontendE2EFramework = {
+  seleniumWebdriver,
+  chai,
+
+  api,
+
+  support: {
+    browser,
+    element,
+    form,
+    text,
+    utility,
+  },
+};
+
+module.exports = AmidoFrontendE2EFramework;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.8)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+{
+  "coverage": "100%",
+  "expectCount": 12,
+  "actualCount": 12,
+  "files": {
+    "amido-frontend-e2e-framework/index.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/api.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/step_definitions/browser.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/support/browser.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/step_definitions/element.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/support/element.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/step_definitions/form.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/support/form.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/step_definitions/text.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/support/text.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/step_definitions/utility.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "amido-frontend-e2e-framework/features/support/utility.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    }
+  }
+}

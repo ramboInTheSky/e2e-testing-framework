@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">amido-frontend-e2e-framework/features/support/element.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://bitbucket.org/amidoltd/amido-frontend-e2e-framework.git">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-api">api</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-AmidoFrontendE2EFramework">AmidoFrontendE2EFramework</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/step_definitions</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-browserStepDefs">browserStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-elementStepDefs">elementStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-formStepDefs">formStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-textStepDefs">textStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-utilityStepDefs">utilityStepDefs</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/support</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-browserSupport">browserSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-elementSupport">elementSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-formSupport">formSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-textSupport">textSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-utilitySupport">utilitySupport</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">amido-frontend-e2e-framework/features/support/element.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+  * Element supporting functions available for use in spec declarations
+  * @access public
+  * @example const elementSupport = require(&apos;amido-frontend-e2e-framework&apos;).support.element;
+  * @example elementSupport.find.call(this, { id: &apos;my-id &apos;}).then((elem) =&gt; {... // find element using keyed object
+  * @example elementSupport.findById.call(this, &apos;my-id&apos;).then((elem) =&gt; {... // find element by ID
+  * @example elementSupport.findByClassName.call(this, &apos;my-class&apos;).then((elem) =&gt; {... // find element/s by class
+  * @example elementSupport.findByTagName.call(this, &apos;a&apos;).then((elem) =&gt; {... // find element/s by tag name
+  * @example elementSupport.findByName.call(this, &apos;my-name&apos;).then((elem) =&gt; {... // find element/s by name
+  * @example elementSupport.findByLinkText.call(this, &apos;Link text&apos;).then((elem) =&gt; {... // find element/s by link text
+  * @example elementSupport.findByPartialLinkText.call(this, &apos;Link te&apos;).then((elem) =&gt; {... // find element/s by partial link text
+  * @example elementSupport.findByCss.call(this, &apos;.my-selector&apos;).then((elem) =&gt; {... // find element/s by CSS selector
+  * @example elementSupport.findByXPath.call(this, &apos;/html/body/article/p&apos;).then((elem) =&gt; {... // find element/s by XPath
+  */
+const elementSupport = {
+  find(obj) {
+    return this.driver.find(obj);
+  },
+
+  findById(id) {
+    return this.driver.findElement({ id });
+  },
+
+  findByClassName(className) {
+    return this.driver.findElement({ className });
+  },
+
+  findByTagName(tagName) {
+    return this.driver.findElement({ tagName });
+  },
+
+  findByName(name) {
+    return this.driver.findElement({ name });
+  },
+
+  findByLinkText(linkText) {
+    return this.driver.findElement({ linkText });
+  },
+
+  findByPartialLinkText(partialLinkText) {
+    return this.driver.findElement({ partialLinkText });
+  },
+
+  findByCss(css) {
+    return this.driver.findElement({ css });
+  },
+
+  findByXPath(xpath) {
+    return this.driver.findElement({ xpath });
+  },
+};
+
+module.exports = elementSupport;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.8)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

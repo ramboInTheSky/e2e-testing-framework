@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">amido-frontend-e2e-framework/features/step_definitions/text.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://bitbucket.org/amidoltd/amido-frontend-e2e-framework.git">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-api">api</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-AmidoFrontendE2EFramework">AmidoFrontendE2EFramework</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/step_definitions</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-browserStepDefs">browserStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-elementStepDefs">elementStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-formStepDefs">formStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-textStepDefs">textStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-utilityStepDefs">utilityStepDefs</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/support</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-browserSupport">browserSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-elementSupport">elementSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-formSupport">formSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-textSupport">textSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-utilitySupport">utilitySupport</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">amido-frontend-e2e-framework/features/step_definitions/text.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">const element = require(&apos;../support/element&apos;);
+const expect = require(&apos;chai&apos;).expect;
+
+/**
+  * Text step definitions for use in feature files
+  * @access public
+  * @example Then the element with ID &quot;my-id&quot; has the text &quot;My text&quot;
+  * @example Then the element with class &quot;my-class&quot; has the text &quot;My text&quot;
+  * @example Then the element with tag &quot;a&quot; has the text &quot;My text&quot;
+  * @example Then the element with name &quot;my-name&quot; has the text &quot;My text&quot;
+  * @example Then the element with link text &quot;My link&quot; has the text &quot;My link&quot;
+  * @example Then the element with partial link text &quot;My li&quot; has the text &quot;My link&quot;
+  * @example Then the element with CSS selector &quot;.my-element&quot; has the text &quot;My text&quot;
+  * @example Then the element with XPath &quot;/html/body/article/p&quot; has the text &quot;My text&quot;
+  */
+const textStepDefs = function () {
+  this.Then(/^the element with ID &quot;([^&quot;]*)&quot; has the text &quot;([^&quot;]*)&quot;$/, function (id, text) {
+    return element.findById.call(this, id).getText()
+      .then((elemText) =&gt; {
+        expect(elemText).to.equal(text);
+      });
+  });
+
+  this.Then(/^the element with class &quot;([^&quot;]*)&quot; has the text &quot;([^&quot;]*)&quot;$/, function (className, text) {
+    return element.findByClassName.call(this, className).getText()
+      .then((elemText) =&gt; {
+        expect(elemText).to.equal(text);
+      });
+  });
+
+  this.Then(/^the element with tag &quot;([^&quot;]*)&quot; has the text &quot;([^&quot;]*)&quot;$/, function (tagName, text) {
+    return element.findByTagName.call(this, tagName).getText()
+      .then((elemText) =&gt; {
+        expect(elemText).to.equal(text);
+      });
+  });
+
+  this.Then(/^the element with name &quot;([^&quot;]*)&quot; has the text &quot;([^&quot;]*)&quot;$/, function (name, text) {
+    return element.findByName.call(this, name).getText()
+      .then((elemText) =&gt; {
+        expect(elemText).to.equal(text);
+      });
+  });
+
+  this.Then(/^the element with link text &quot;([^&quot;]*)&quot; has the text &quot;([^&quot;]*)&quot;$/, function (linkText, text) {
+    return element.findByLinkText.call(this, linkText).getText()
+      .then((elemText) =&gt; {
+        expect(elemText).to.equal(text);
+      });
+  });
+
+  this.Then(/^the element with partial link text &quot;([^&quot;]*)&quot; has the text &quot;([^&quot;]*)&quot;$/, function (partialLinkText, text) {
+    return element.findByPartialLinkText.call(this, partialLinkText).getText()
+      .then((elemText) =&gt; {
+        expect(elemText).to.equal(text);
+      });
+  });
+
+  this.Then(/^the element with CSS selector &quot;([^&quot;]*)&quot; has the text &quot;([^&quot;]*)&quot;$/, function (css, text) {
+    return element.findByCss.call(this, css).getText()
+      .then((elemText) =&gt; {
+        expect(elemText).to.equal(text);
+      });
+  });
+
+  this.Then(/^the element with XPath &quot;([^&quot;]*)&quot; has the text &quot;([^&quot;]*)&quot;$/, function (xpath, text) {
+    return element.findByXPath.call(this, xpath).getText()
+      .then((elemText) =&gt; {
+        expect(elemText).to.equal(text);
+      });
+  });
+};
+
+module.exports = textStepDefs;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.8)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

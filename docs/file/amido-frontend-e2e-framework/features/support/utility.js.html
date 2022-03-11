@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">amido-frontend-e2e-framework/features/support/utility.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://bitbucket.org/amidoltd/amido-frontend-e2e-framework.git">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-api">api</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-AmidoFrontendE2EFramework">AmidoFrontendE2EFramework</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/step_definitions</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-browserStepDefs">browserStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-elementStepDefs">elementStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-formStepDefs">formStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-textStepDefs">textStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-utilityStepDefs">utilityStepDefs</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/support</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-browserSupport">browserSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-elementSupport">elementSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-formSupport">formSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-textSupport">textSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-utilitySupport">utilitySupport</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">amido-frontend-e2e-framework/features/support/utility.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">const seleniumWebdriver = require(&apos;selenium-webdriver&apos;);
+
+/**
+  * Utility supporting functions available for use in spec declarations
+  * @access public
+  * @example const utilitySupport = require(&apos;amido-frontend-e2e-framework&apos;).support.utility;
+  * @example utilitySupport.wait.call(this, myConditionFunction, 3000); // wait 3s for myConditionFunction to pass - see http://www.seleniumhq.org/docs/03_webdriver.jsp
+  * @example utilitySupport.waitForElementLocatedById.call(this, &apos;my-id&apos;, 3000); // wait 3s for element with ID to be located
+  * @example utilitySupport.waitForElementLocatedByClassName.call(this, &apos;my-class&apos;, 3000); // wait 3s for element with class to be located
+  * @example utilitySupport.waitForElementLocatedByTagName.call(this, &apos;a&apos;, 3000); // wait 3s for element with tag name to be located
+  * @example utilitySupport.waitForElementLocatedByName.call(this, &apos;my-name&apos;, 3000); // wait 3s for element with name to be located
+  * @example utilitySupport.waitForElementLocatedByLinkText.call(this, &apos;My link&apos;, 3000); // wait 3s for element with link text to be located
+  * @example utilitySupport.waitForElementLocatedByPartialLinkText.call(this, &apos;My li&apos;, 3000); // wait 3s for element with partial link text to be located
+  * @example utilitySupport.waitForElementLocatedByCss.call(this, &apos;.my-class&apos;, 3000); // wait 3s for element with CSS selector to be located
+  * @example utilitySupport.waitForElementLocatedByXPath.call(this, &apos;/html/body/article/p&apos;, 3000); // wait 3s for element with XPath to be located
+  * @example utilitySupport.sleep.call(this, 3000); // sleep the execution for 3s
+  * @example utilitySupport.takeScreenshot.call(this).then((screenshotData) =&gt; { // take a screenshot (returns binary data which must be saved to disk)
+  */
+const utilitySupport = {
+  wait(condition, ms) {
+    return this.driver.wait(condition, ms);
+  },
+
+  waitForElementLocatedById(id, ms) {
+    const condition = seleniumWebdriver.until.elementLocated({ id });
+
+    return this.driver.wait(condition, ms);
+  },
+
+  waitForElementLocatedByClassName(className, ms) {
+    const condition = seleniumWebdriver.until.elementLocated({ className });
+
+    return this.driver.wait(condition, ms);
+  },
+
+  waitForElementLocatedByTagName(tagName, ms) {
+    const condition = seleniumWebdriver.until.elementLocated({ tagName });
+
+    return this.driver.wait(condition, ms);
+  },
+
+  waitForElementLocatedByName(name, ms) {
+    const condition = seleniumWebdriver.until.elementLocated({ name });
+
+    return this.driver.wait(condition, ms);
+  },
+
+  waitForElementLocatedByLinkText(linkText, ms) {
+    const condition = seleniumWebdriver.until.elementLocated({ linkText });
+
+    return this.driver.wait(condition, ms);
+  },
+
+  waitForElementLocatedByPartialLinkText(partialLinkText, ms) {
+    const condition = seleniumWebdriver.until.elementLocated({ partialLinkText });
+
+    return this.driver.wait(condition, ms);
+  },
+
+  waitForElementLocatedByCss(css, ms) {
+    const condition = seleniumWebdriver.until.elementLocated({ css });
+
+    return this.driver.wait(condition, ms);
+  },
+
+  waitForElementLocatedByXPath(xpath, ms) {
+    const condition = seleniumWebdriver.until.elementLocated({ xpath });
+
+    return this.driver.wait(condition, ms);
+  },
+
+  sleep(ms) {
+    return this.driver.sleep(ms);
+  },
+
+  takeScreenshot() {
+    return this.driver.takeScreenshot();
+  },
+};
+
+module.exports = utilitySupport;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.8)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

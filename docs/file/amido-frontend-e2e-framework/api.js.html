@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">amido-frontend-e2e-framework/api.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://bitbucket.org/amidoltd/amido-frontend-e2e-framework.git">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-api">api</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-AmidoFrontendE2EFramework">AmidoFrontendE2EFramework</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/step_definitions</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-browserStepDefs">browserStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-elementStepDefs">elementStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-formStepDefs">formStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-textStepDefs">textStepDefs</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-utilityStepDefs">utilityStepDefs</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">features/support</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-browserSupport">browserSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-elementSupport">elementSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-formSupport">formSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-textSupport">textSupport</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-utilitySupport">utilitySupport</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">amido-frontend-e2e-framework/api.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const async = require(&apos;async&apos;);
+
+const configHelper = require(&apos;./lib/config&apos;);
+const configStore = require(&apos;./lib/stores/config&apos;);
+const runner = require(&apos;./lib/runner&apos;);
+const logger = require(&apos;./lib/logger&apos;);
+
+const infoLog = (config, multiple) =&gt; {
+  logger.title(`Amido E2E Test Framework - ${config.name}`);
+  logger.lineBreak();
+  logger.info(multiple ? &apos;Running multiple instances in serial&apos; : &apos;Running single instance&apos;);
+  logger.lineBreak();
+  logger.info(`Feature files directory: ${config.featuresDir}`);
+  logger.info(`Environment: ${config.environment}`);
+  logger.lineBreak();
+};
+
+/**
+  * Public framework API methods
+  * @example const framework = require(&apos;amido-frontend-e2e-framework&apos;);
+  * @example framework.api.run({
+      name: &apos;Amido frontend E2E example&apos;,
+      featuresDir: `${__dirname}/features`,
+
+      defaultTimeout: 60000,
+
+      createReport: true,
+      reportsDir: `${__dirname}/reports`,
+
+      takeScreenshotOnFailure: true,
+      screenshotsDir: `${__dirname}/reports/screenshots`,
+
+      localDriver: &apos;chrome&apos;,
+      browserstack: {
+        server: &apos;hub-cloud.browserstack.com&apos;,
+        username: &apos;edkelly3&apos;,
+        accessKey: &apos;G2FpCqykFqGvBrDwj3Cr&apos;,
+
+        capabilities: {
+          browserName: &apos;Chrome&apos;,
+          resolution: &apos;1024x768&apos;,
+        },
+      },
+
+      debug: true,
+    });
+  * @example framework.api.runMultiple({
+      name: &apos;Amido frontend E2E example&apos;,
+      featuresDir: `${__dirname}/features`,
+
+      defaultTimeout: 60000,
+
+      createReport: true,
+      reportsDir: `${__dirname}/reports`,
+
+      takeScreenshotOnFailure: true,
+      screenshotsDir: `${__dirname}/reports/screenshots`,
+
+      localDriver: &apos;chrome&apos;,
+      browserstack: {
+        server: &apos;hub-cloud.browserstack.com&apos;,
+        username: &apos;edkelly3&apos;,
+        accessKey: &apos;G2FpCqykFqGvBrDwj3Cr&apos;,
+      },
+
+      debug: true,
+    }, [
+      {
+        browserName: &apos;Chrome&apos;,
+        resolution: &apos;1024x768&apos;,
+      },
+      {
+        browserName: &apos;Firefox&apos;,
+        resolution: &apos;1024x768&apos;,
+      },
+    ]);
+  * @access public
+  */
+const api = {
+  run: (_config) =&gt; {
+    // get config
+
+    const config = configHelper.extendFromDefaultObject(_config);
+    config.frameworkBaseDir = __dirname;
+
+    infoLog(config, false);
+
+    // assign to store
+
+    configStore.set(config);
+
+    // let&apos;s go!
+
+    runner(configHelper.getCliArgumentsFromObject(config));
+  },
+
+  runMultiple: (_config, capabilities) =&gt; {
+    // get config
+
+    let config = configHelper.extendFromDefaultObject(_config);
+    config.frameworkBaseDir = __dirname;
+
+    infoLog(config, true);
+
+    // this method shouldn&apos;t be used with local run
+
+    if (config.environment !== &apos;remote&apos;) {
+      throw new Error(&apos;runMultiple() is only designed to work remotely&apos;);
+    }
+
+    const waterfallFuncs = [];
+
+    // for all the passed cabailities
+
+    capabilities.forEach((capability) =&gt; {
+      waterfallFuncs.push((callback) =&gt; {
+        // reload config (especially the fileSuffix param for reporting/screenshotting)
+
+        config = configHelper.extendFromDefaultObject(_config);
+
+        config.frameworkBaseDir = __dirname;
+        config.browserstack.capabilities = capability;
+
+        // save in store
+
+        configStore.set(config);
+
+        // let&apos;s go!
+
+        runner(configHelper.getCliArgumentsFromObject(config))
+          .then(callback);
+      });
+    });
+
+    // run all in sequence
+
+    async.waterfall(waterfallFuncs);
+  },
+};
+
+module.exports = api;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.8)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

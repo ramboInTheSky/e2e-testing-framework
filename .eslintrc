@@ -1,0 +1,15 @@
+{
+  "extends": "airbnb/base",
+  "globals": {},
+  "rules": {
+    "func-names": 0,
+    "new-cap": 0,
+    "arrow-body-style": 0,
+    "prefer-arrow-callback": 0,
+    "no-param-reassign": 0,
+    "strict": 0,
+    "global-require": 0,
+    "no-case-delcarations": 0,
+    "max-len": 0
+  }
+}
